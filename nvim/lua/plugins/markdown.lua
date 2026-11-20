@@ -3,8 +3,11 @@ return {
   {
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    build = function()
-      vim.fn["mkdp#util#install"]()
+    -- Lazy runs Lua build before the plugin is on &rtp, so autoload mkdp#* is missing (E117).
+    -- prepend rtp, then sync install (prebuilt or app/install.sh).
+    build = function(plugin)
+      vim.opt.rtp:prepend(plugin.dir)
+      vim.fn["mkdp#util#install_sync"](1)
     end,
     ft = { "markdown" },
     keys = {

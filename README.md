@@ -21,10 +21,29 @@ From an existing clone:
 |------|---------|
 | `--dry-run` | Show what would happen |
 | `--no-nvim` | Skip `nvim` Lazy plugin sync |
+| `--skip-deps` | Skip auto-install of system packages, nvm, Node |
 | `--skip-tmux` | Do not download gpakosz `~/.tmux.conf` |
 | `--skip-omz` | Skip Oh My Zsh install |
 | `--chsh` | Set login shell to `zsh` |
 | `--repo-dir PATH` | Repo root (default: directory containing this script) |
+
+### What `install.sh` installs (by default)
+
+Only **missing** tools are installed:
+
+| Layer | Tools |
+|-------|--------|
+| **macOS** | Homebrew (if absent), then `git`, `curl`, `zsh`, `tmux`, `neovim`, `ripgrep`, `fzf` |
+| **Linux** | via `apt` / `dnf` / `pacman` / … — same set + `xclip` (or `wl-clipboard` on Arch) |
+| **User** | [nvm](https://github.com/nvm-sh/nvm) + Node.js LTS, Oh My Zsh, gpakosz tmux, dotfile symlinks, Lazy.nvim sync |
+
+Linux installs use `sudo` when available. Use `--skip-deps` if the host is locked down (only symlinks + OMZ).
+
+On first run (or when `~/.gitconfig.local` still has placeholders), the script **asks** for `user.name` and `user.email`.  
+Non-interactive: `SHELL_CONFIG_GIT_NAME=... SHELL_CONFIG_GIT_EMAIL=... ./install.sh`
+
+It also asks for the **real CLI agent command** (e.g. `fcc-pi`), writes it to `~/.config/shell-config/agent-target`, and installs `~/.local/bin/nvim-agent` (used by sidekick in `ai.lua`).  
+Non-interactive: `SHELL_CONFIG_AGENT_CMD=fcc-pi ./install.sh`
 
 ## Layout
 
@@ -44,17 +63,6 @@ Machine-specific settings stay in **gitignored** files:
 
 Repo path is stored in `~/.config/shell-config/path` for zsh bootstrap.
 
-## Dependencies
-
-Install before or after `install.sh` (soft requirements):
-
-- **Required:** `git`, `zsh`, `curl`
-- **Recommended:** `tmux`, `neovim` (0.9+), `ripgrep` (Telescope)
-
-macOS (Homebrew): `brew install zsh tmux neovim ripgrep`
-
-Debian/Ubuntu: `sudo apt install zsh tmux neovim ripgrep git curl`
-
 ## Git aliases
 
 Common shortcuts (`p`, `pf`, `st`, `ll`, `rbi`, `rbc`, …). Interactive rebase:
@@ -68,7 +76,7 @@ git rbi HEAD~3
 
 First run installs plugins via lazy.nvim. `install.sh` runs headless sync unless `--no-nvim`.
 
-Sidekick agent defaults to `fcc-pi` — override on servers without it or add the binary to `PATH`.
+Sidekick calls `~/.local/bin/nvim-agent`; target command is configured at install (see `agent-target`).
 
 ## tmux
 

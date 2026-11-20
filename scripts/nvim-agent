@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Wrapper for Neovim sidekick — real command lives in ~/.config/shell-config/agent-target
+set -euo pipefail
+
+agent_target="${HOME}/.config/shell-config/agent-target"
+if [[ ! -f "$agent_target" ]]; then
+  printf 'nvim-agent: missing %s (run shell-config install.sh)\n' "$agent_target" >&2
+  exit 127
+fi
+
+line="$(head -n1 "$agent_target" | tr -d '\r')"
+if [[ -z "$line" ]]; then
+  printf 'nvim-agent: empty %s\n' "$agent_target" >&2
+  exit 127
+fi
+
+eval "set -- $line"
+exec "$@"

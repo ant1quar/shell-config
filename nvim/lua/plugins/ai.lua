@@ -1,3 +1,5 @@
+local agent_cmd = require("config.agent_cmd")
+
 return {
   "folke/sidekick.nvim",
   event = "VeryLazy",
@@ -5,7 +7,7 @@ return {
     nes = { enabled = false }, -- NES требует Copilot; включить при необходимости
     cli = {
       mux = { enabled = true, backend = "tmux", create = "split", split = { vertical = true, size = 0.3 } },
-      tools = { agent = { cmd = { "fcc-pi" } } },
+      tools = { agent = { cmd = agent_cmd.resolve() } },
     },
   },
   keys = {

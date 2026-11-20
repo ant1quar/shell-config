@@ -1,0 +1,3 @@
+# ~/.config/shell-config/agent-target — one line: real CLI behind nvim-agent wrapper.
+# install.sh asks for this. Example:
+fcc-pi
