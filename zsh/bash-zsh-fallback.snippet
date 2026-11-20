@@ -1,0 +1,9 @@
+# shell-config: bash→zsh — when login shell is still bash (chsh failed or skipped)
+if [[ -n "${BASH_VERSION:-}" && -z "${ZSH_VERSION:-}" ]] && [[ $- == *i* ]]; then
+  _shell_config_zsh="$(command -v zsh 2>/dev/null)" || true
+  if [[ -n "${_shell_config_zsh}" ]]; then
+  export SHELL="$_shell_config_zsh"
+  exec "$_shell_config_zsh" -l
+  fi
+  unset _shell_config_zsh
+fi

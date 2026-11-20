@@ -13,7 +13,7 @@ NO_NVIM=0
 SKIP_TMUX=0
 SKIP_OMZ=0
 SKIP_DEPS=0
-DO_CHSH=0
+NO_CHSH=0
 REPO_DIR=""
 
 OS=""
@@ -29,7 +29,7 @@ Options:
   --skip-deps     Do not install system packages / nvm / node
   --skip-tmux     Do not fetch gpakosz .tmux.conf
   --skip-omz      Skip Oh My Zsh install
-  --chsh          Run chsh -s $(command -v zsh) when possible
+  --no-chsh       Do not try chsh or bash→zsh fallback
   --repo-dir DIR  Dotfiles repo root (default: script directory or ~/.local/share/shell-config)
   -h, --help      This help
 
@@ -614,17 +614,52 @@ sync_nvim() {
   nvim --headless "+Lazy! sync" +qa
 }
 
-maybe_chsh() {
-  (( DO_CHSH )) || return 0
-  local zsh_bin
-  zsh_bin="$(command -v zsh || true)"
-  [[ -n "$zsh_bin" ]] || { echo "error: zsh not in PATH" >&2; exit 1; }
-  if [[ "${SHELL:-}" == "$zsh_bin" ]]; then
-    log "Login shell already zsh"
+login_shell_path() {
+  local u="${USER:-$(id -un)}"
+  getent passwd "$u" 2>/dev/null | cut -d: -f7
+}
+
+install_bash_zsh_fallback() {
+  local snippet="$REPO_DIR/zsh/bash-zsh-fallback.snippet"
+  local bashrc="$HOME/.bashrc"
+  [[ -f "$snippet" ]] || { warn "missing $snippet"; return 0; }
+  if [[ -f "$bashrc" ]] && grep -q 'shell-config: bash→zsh' "$bashrc" 2>/dev/null; then
+    log "bash→zsh fallback already in $bashrc"
     return 0
   fi
-  log "chsh -s $zsh_bin (may prompt for password)"
-  run chsh -s "$zsh_bin"
+  log "Append bash→zsh fallback to $bashrc (SSH still shows bash until chsh)"
+  if (( DRY_RUN )); then
+    printf '[dry-run] cat %s >> %s\n' "$snippet" "$bashrc"
+    return 0
+  fi
+  {
+    printf '\n'
+    cat "$snippet"
+  } >>"$bashrc"
+}
+
+ensure_login_zsh() {
+  (( NO_CHSH )) && return 0
+  local zsh_bin login_sh
+  zsh_bin="$(command -v zsh || true)"
+  [[ -n "$zsh_bin" ]] || { warn "zsh not in PATH"; return 0; }
+  login_sh="$(login_shell_path)"
+  if [[ "$login_sh" == "$zsh_bin" ]]; then
+    log "Login shell already zsh ($login_sh)"
+    return 0
+  fi
+  log "Login shell is ${login_sh:-unknown}; setting default to $zsh_bin (password may be required)"
+  if (( DRY_RUN )); then
+    printf '[dry-run] chsh -s %s\n' "$zsh_bin"
+    install_bash_zsh_fallback
+    return 0
+  fi
+  if chsh -s "$zsh_bin" 2>/dev/null; then
+    log "chsh OK — new logins will use zsh"
+    return 0
+  fi
+  warn "chsh failed (try: chsh -s $zsh_bin). Using bash→zsh fallback."
+  install_bash_zsh_fallback
 }
 
 write_marker() {
@@ -644,7 +679,7 @@ main() {
       --skip-deps) SKIP_DEPS=1 ;;
       --skip-tmux) SKIP_TMUX=1 ;;
       --skip-omz) SKIP_OMZ=1 ;;
-      --chsh) DO_CHSH=1 ;;
+      --no-chsh) NO_CHSH=1 ;;
       --repo-dir)
         shift
         REPO_DIR="${1:?--repo-dir needs a path}"
@@ -684,9 +719,9 @@ main() {
   setup_nvim_agent
   (( SKIP_TMUX )) || fetch_tmux_conf
   sync_nvim
-  maybe_chsh
+  ensure_login_zsh
 
-  log "Done. Open a new zsh session or: exec zsh"
+  log "Done. Open a new login session or: exec zsh -l"
   log "Edit ~/.gitconfig.local and ~/.zshrc.local for machine-specific settings"
 }
 

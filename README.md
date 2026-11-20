@@ -24,7 +24,7 @@ From an existing clone:
 | `--skip-deps` | Skip auto-install of system packages, nvm, Node |
 | `--skip-tmux` | Do not download gpakosz `~/.tmux.conf` |
 | `--skip-omz` | Skip Oh My Zsh install |
-| `--chsh` | Set login shell to `zsh` |
+| `--no-chsh` | Skip `chsh` and bash→zsh fallback |
 | `--repo-dir PATH` | Repo root (default: directory containing this script) |
 
 ### What `install.sh` installs (by default)
