@@ -6,7 +6,8 @@ autoload -Uz add-zsh-hook
 _shell_config_host_color() {
   local h="${1:-${HOST:-$(hostname -s 2>/dev/null)}}"
   h="${h%%.*}"
-  local -a palette=(red green yellow blue magenta cyan)
+  # Только яркие, читаемые на тёмном фоне (256-color / bright ANSI).
+  local -a palette=(208 214 45 82 196 201)
   integer sum=0 i ord=0
   for (( i = 1; i <= ${#h}; i++ )); do
     ord=$(printf '%d' "'${h[i]}")
@@ -19,7 +20,7 @@ _shell_config_set_prompt() {
   local c
   c="$(_shell_config_host_color)"
   # %c — хвост cwd (как robbyrussell)
-  PROMPT="%F{${c}}%n@%m%f %F{blue}%B➜%b%f %c "
+  PROMPT="%F{${c}}%n@%m%f %F{250}%B➜%b%f %c "
   RPROMPT=""
 }
 
