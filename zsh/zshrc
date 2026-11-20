@@ -19,5 +19,6 @@ if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then
 fi
 
 [[ -f "$SHELL_CONFIG_DIR/zsh/env.zsh" ]] && source "$SHELL_CONFIG_DIR/zsh/env.zsh"
+[[ -f "$SHELL_CONFIG_DIR/zsh/prompt.zsh" ]] && source "$SHELL_CONFIG_DIR/zsh/prompt.zsh"
 [[ -f "$SHELL_CONFIG_DIR/zsh/aliases.zsh" ]] && source "$SHELL_CONFIG_DIR/zsh/aliases.zsh"
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
