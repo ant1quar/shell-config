@@ -1,0 +1,1 @@
+# Portable aliases (machine-specific → ~/.zshrc.local)

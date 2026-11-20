@@ -1,0 +1,12 @@
+# ===== Swap / backup files =====
+*.swp
+*.bak
+*.undo*
+
+# ===== OS / editor temp files =====
+*~
+/*.swp
+/*.swo
+# ===== Possible IDE specific folders =====
+.idea/
+.vscode/

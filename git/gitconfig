@@ -1,0 +1,26 @@
+[alias]
+	p = push
+	pf = push --force-with-lease
+	st = status
+	ll = log --oneline
+	last = log -1 HEAD --stat
+	rv = remote -v
+	rbi = rebase -i
+	rbc = rebase --continue
+	d = diff
+	dv = difftool -t vimdiff -y
+	gl = config --global -l
+	se = !git rev-list --all | xargs git grep -F
+	cb = checkout -b
+	co = checkout
+	cm = commit -m
+	ca = commit --amend
+	com = checkout master
+[core]
+	excludesfile = ~/.gitignore_global
+	fileMode = false
+[push]
+	autoSetupRemote = true
+	default = current
+[include]
+	path = ~/.gitconfig.local

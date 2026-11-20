@@ -1,0 +1,4 @@
+# Copy to ~/.zshrc.local for machine-only settings.
+
+# export PATH="/Applications/SomeApp.app/Contents/MacOS:$PATH"
+# alias myproject='cd ~/src/myproject'

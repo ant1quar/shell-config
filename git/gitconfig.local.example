@@ -1,0 +1,10 @@
+# Copy to ~/.gitconfig.local (install.sh does this on first run).
+# Project-specific includes (work git identity, etc.) belong here.
+
+[user]
+	name = Your Name
+	email = you@example.com
+
+# Example: work identity for a specific tree
+# [includeIf "gitdir:~/work/"]
+#     path = ~/work/.gitconfig

@@ -1,0 +1,7 @@
+# Local secrets / per-machine (never commit real copies from $HOME)
+*.local
+!*.local.example
+!tmux/tmux.conf.local
+
+# install.sh backups in $HOME, listed here if ever copied into repo
+*.pre-shell-config-*
